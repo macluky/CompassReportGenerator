@@ -5,13 +5,14 @@ import helpers
 
 class ModelData:
 
-    def __init__(self, _weight_tab="Baseline", _question_db="Product Role Compass v4.9.xlsx",
+    def __init__(self, _question_count=74, _model_area_count=6, _model_layers_count=3, _weight_tab="Baseline", _question_db="Product Role Compass v4.9.xlsx",
                  _question_path="/Users/macluky/Library/CloudStorage/OneDrive-SharedLibraries-ExpandiorAcademyB.V/Expandior Team - Documents/Product/Compass (Maturity Scan Personal)"):
         self.question_db = _question_db
         self.question_path = _question_path
         self.weight_tab = _weight_tab
-        self.model_layers_count = 3
-        self.question_count = 74
+        self.model_layers_count = _model_layers_count
+        self.question_count = _question_count
+        self.area_count = _model_area_count
         self.recommendations = 18
         self.file = self.question_path + "/" + self.question_db
 
@@ -206,7 +207,11 @@ class ReportGenerator:
             self.replace_tag_with_bar(tag, label)
 
         # level 2 spider
-        self.replace_tag_with_spider_of_depth("<Details Score>", 2)
+        if self.qp.levels > 2:
+            self.replace_tag_with_spider_of_depth("<Details Score>", 2)
+        else:
+            # or the bar charts as spider
+            self.replace_tag_with_spider_of_depth("<Details Score>", 1)
 
     def score_analysis(self):
         score = helpers.score_at_level(results=self.results, level=0)
@@ -218,8 +223,9 @@ class ReportGenerator:
             tag = "<" + label + " Areas>"
             if score < self.wp.weight_label(label):
                 sub_labels = helpers.sub_labels_of_label(self.rp, self.results, label)
-                sep = ", "
-                self.replace_tag_with_text(tag, "Area(s) of concern: " + sep.join(sub_labels))
+                if sub_labels is not None:
+                    sep = ", "
+                    self.replace_tag_with_text(tag, "Area(s) of concern: " + sep.join(sub_labels))
             else:
                 self.replace_tag_with_text(tag, "")
 
@@ -231,7 +237,8 @@ class ReportGenerator:
             ref_level = helpers.weight_for_parent_label(self.wp, self.results, label)
             if score < ref_level:
                 advice = self.ap.advice_for_label_at_depth_with_reference(label, max_depth, ref_level)
-                total_advice += "To improve " + label + ": " + advice + "\n"
+                if advice is not None:
+                    total_advice += "To improve " + label + ": " + advice + "\n"
         self.replace_tag_with_text("<Recommendations>", total_advice)
 
 

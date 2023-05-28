@@ -1,6 +1,5 @@
 import openpyxl, copy
 from questionsparser import QuestionsParser
-from typeform import Typeform
 
 
 class Answer:

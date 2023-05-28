@@ -3,15 +3,15 @@ import openpyxl
 
 class WeightParser:
 
-    def __init__(self, _weight_tab="Baseline",
+    def __init__(self, _count=6, _weight_tab="Baseline",
                  _file="/Users/macluky/Library/CloudStorage/OneDrive-SharedLibraries-ExpandiorAcademyB.V/Expandior Team - Documents/Product/Compass (Maturity Scan Personal)/Product Role Compass v4.9.xlsx"):
         self.file = _file
         self.weights = dict()
 
-        workbook = openpyxl.load_workbook(self.file)
+        workbook = openpyxl.load_workbook(self.file, read_only=False)
         sheet = workbook[_weight_tab]
 
-        for row in range(2, 8):
+        for row in range(2, (2 + _count)):
             axis = sheet.cell(row=row, column=1).value
             area = sheet.cell(row=row, column=2).value
             weight = sheet.cell(row=row, column=3).value
@@ -22,8 +22,10 @@ class WeightParser:
         if label is None:
             total = 0
             for w in self.weights.values():
+                if w is None:
+                    print("no weights found??")
                 total += w
-            return total/6
+            return total/len(self.weights)
         else:
             count = 0
             total = 0

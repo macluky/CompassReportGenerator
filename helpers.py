@@ -44,6 +44,9 @@ def sub_labels_of_label(results_parser, results, label):
     depth = depth_of_label(results_parser, results, label)
     sub_labels = []
     for result in results:
+        if (depth + 1) >= len(result.levels):
+            #there are no sublevels
+            return None
         sub_label = result.levels[depth + 1]
         parent = result.levels[depth]
         if parent == label:
