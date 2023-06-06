@@ -56,14 +56,16 @@ def process_results_for_model(results, model, template_path, use_dynamic_weights
 
 # Based on model 4.9
 def run_1():
-    rp = "/Users/macluky/Documents/Work/Expandior/Clients/TopDesk/Assessment"
+    docs="/Users/macluky/Library/CloudStorage/OneDrive-SharedLibraries-ExpandiorAcademyB.V/Expandior Team - Documents"
+    rp = docs + "/Operation/Opdrachtgevers/TopDesk/Assessment/1.1"
+
     m = ModelData(_weight_tab="TOPdesk PO")
-    r = ResultData(_nr_of_candidates=12, _result_path=rp, _result_db="responses-po.xlsx")
+    r = ResultData(_nr_of_candidates=17, _result_path=rp, _result_db="responses-po.xlsx")
     g = ReportGenerator()
     process_results_for_model(r, m, g.file, False)
     m = ModelData(_weight_tab="TOPdesk PM")
-    r = ResultData(_nr_of_candidates=2, _result_path=rp, _result_db="responses-pm.xlsx")
-    process_results_for_model(r, m, False)
+    r = ResultData(_nr_of_candidates=4, _result_path=rp, _result_db="responses-pm.xlsx")
+    process_results_for_model(r, m, g.file, False)
 
 
 # Based on model 5.0
@@ -76,6 +78,6 @@ def run_2():
     process_results_for_model(r, m, rp+"/ReportTemplate.docx", False)
 
 # main
-run_2()
+#run_2()
 #check backwards compatibilty
-#run_1()
+run_1()
