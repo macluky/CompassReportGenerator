@@ -276,6 +276,8 @@ class ReportGenerator:
         # access first row's cells
         heading_row = table.rows[0].cells
 
+        #TODO: formatting of the table and cells
+
         # add headings
         heading_row[0].text = "Question"
         for i in range(0, r_count):
@@ -296,3 +298,5 @@ class ReportGenerator:
                 cell = table.cell(row_idx=1 + i, col_idx=col)
                 cell.text = str(answers[i])
             col += 1
+
+
