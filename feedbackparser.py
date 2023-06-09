@@ -14,9 +14,10 @@ def is_valid_question(question, topic1, topic2, topic3, topic4, topic5, topic6):
         return False
     if topic6 == "" and "topic6" in question:
         return False
-    if question in ["topic1", "topic2", "topic3", "topic4", "topic5", "topic6", "professional", "company", "email", "Start Date (UTC)", "Submit Date (UTC)", "Network ID" ]:
+    if question in ["topic1", "topic2", "topic3", "topic4", "topic5", "topic6", "professional", "company", "email",
+                    "Start Date (UTC)", "Submit Date (UTC)", "Network ID"]:
         return False
-    #print(question)
+    # print(question)
     return True
 
 
@@ -61,11 +62,14 @@ class FeedbackParser:
             # add the responses
             professional.append(responses)
 
+    def have_feedback_for_email(self, email):
+        return self.responses_for_email(email) is not None
+
     def responses_for_email(self, email):
         if email in self.professionals.keys():
             return self.professionals[email]
         else:
-            print("found no feedback for: " + email)
+            #print("found no feedback for: " + email)
             return None
 
     def expanded_responses_for_email(self, email):

@@ -4,10 +4,12 @@ from adviceparser import AdviceParser
 from weightparser import WeightParser
 from dynamicweightparser import DynamicWeightParser
 from typeformresultsparser import TypeFormResultsParser
+from feedbackparser import FeedbackParser
 import helpers
 
 
-def process_results_for_model(results, model, template_path, use_dynamic_weights=False, create_baseline=False):
+def process_results_for_model(results, model, template_path, use_dynamic_weights=False, create_baseline=False, _include_feedback=False):
+
     qp = QuestionsParser(_count=model.question_count, _levels=model.model_layers_count, _file=model.file)
     ap = AdviceParser(_count=model.recommendations, _max_model_layers=model.model_layers_count, _file=model.file)
     wp = WeightParser(_file=model.file, _weight_tab=model.weight_tab, _count=model.area_count)
@@ -35,6 +37,16 @@ def process_results_for_model(results, model, template_path, use_dynamic_weights
         report.score_analysis(model.model_layers_count)
         report.add_graphs_with_ref_level()
         report.add_recommendations()
+
+        if _include_feedback:
+            email = report.email
+            # assume the feedback results file lives in the same folder as the results of the assessment
+            fp = FeedbackParser(results.result_path + "/feedback_responses.xlsx")
+            if fp.have_feedback_for_email(email):
+                print("found feedback for " + report.name)
+                # add the feed back as a table
+                report.add_feedback(fp.expanded_responses_for_email(email))
+
         report.save(results.result_path)
 
     # create an average report for all candidates
@@ -59,10 +71,10 @@ def run_1():
     m = ModelData(_weight_tab="TOPdesk PO")
     r = ResultData(_nr_of_candidates=17, _result_path=rp, _result_db="responses-po.xlsx")
     g = ReportGenerator()
-    process_results_for_model(r, m, g.file, False, True)
+    process_results_for_model(r, m, g.file, False, True, True)
     m = ModelData(_weight_tab="TOPdesk PM")
     r = ResultData(_nr_of_candidates=4, _result_path=rp, _result_db="responses-pm.xlsx")
-    process_results_for_model(r, m, g.file, False, True)
+    process_results_for_model(r, m, g.file, False, True, False)
 
 
 # Based on model 5.0
@@ -75,6 +87,6 @@ def run_2():
     process_results_for_model(r, m, rp+"/ReportTemplate.docx", False, False)
 
 # main
-run_2()
+#run_2()
 #check backwards compatibilty
-#run_1()
+run_1()
