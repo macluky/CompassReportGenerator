@@ -145,7 +145,7 @@ class ReportGenerator:
                 fig.write_image(tempfile, format='png', width=450, height=400, scale=0.84)
 
             helpers.substitute_image_placeholder(para, tempfile)
-            print("Replaced tag: " + tag + " with spider of depth "+str(depth))
+            #print("Replaced tag: " + tag + " with spider of depth "+str(depth))
 
     # text replacement
     def set_name(self):
@@ -162,6 +162,7 @@ class ReportGenerator:
         if para is None:
             print("Can't replace: " + tag + " in document template")
         else:
+            #print("Replace: " + tag + " with " + text)
             para.text = text
 
     def find_tag(self, tag, exact_match=True):
@@ -209,25 +210,24 @@ class ReportGenerator:
         # level 2 spider
         if self.qp.levels > 2:
             self.replace_tag_with_spider_of_depth("<Details Score>", 2)
-        else:
-            # or the bar charts as spider
-            self.replace_tag_with_spider_of_depth("<Details Score>", 1)
 
-    def score_analysis(self):
+    def score_analysis(self, model_level_count):
         score = helpers.score_at_level(results=self.results, level=0)
         self.select_tag_text_based_on_score("Overall", score, self.wp.weight_label(None))
 
+        # figure out where they can improve the most
         for label in helpers.all_labels_at_level(self.results, 1):
             score = helpers.calc_score_for_label(self.results, label)
             self.select_tag_text_based_on_score(label, score, self.wp.weight_label(label))
-            tag = "<" + label + " Areas>"
-            if score < self.wp.weight_label(label):
-                sub_labels = helpers.sub_labels_of_label(self.rp, self.results, label)
-                if sub_labels is not None:
-                    sep = ", "
-                    self.replace_tag_with_text(tag, "Area(s) of concern: " + sep.join(sub_labels))
-            else:
-                self.replace_tag_with_text(tag, "")
+            if model_level_count > 2:
+                tag = "<" + label + " Areas>"
+                if score < self.wp.weight_label(label):
+                    sub_labels = helpers.sub_labels_of_label(self.rp, self.results, label)
+                    if sub_labels is not None:
+                        sep = ", "
+                        self.replace_tag_with_text(tag, "Area(s) of concern: " + sep.join(sub_labels))
+                else:
+                    self.replace_tag_with_text(tag, "")
 
     def add_recommendations(self):
         max_depth = self.ap.max_model_layers - 1

@@ -7,7 +7,7 @@ from typeformresultsparser import TypeFormResultsParser
 import helpers
 
 
-def process_results_for_model(results, model, template_path, use_dynamic_weights=False):
+def process_results_for_model(results, model, template_path, use_dynamic_weights=False, create_baseline=False):
     qp = QuestionsParser(_count=model.question_count, _levels=model.model_layers_count, _file=model.file)
     ap = AdviceParser(_count=model.recommendations, _max_model_layers=model.model_layers_count, _file=model.file)
     wp = WeightParser(_file=model.file, _weight_tab=model.weight_tab, _count=model.area_count)
@@ -32,23 +32,20 @@ def process_results_for_model(results, model, template_path, use_dynamic_weights
         all_answers.append(report.results)
 
         # TODO: shouldn't we pass our parsers instead of addressing them as globals?
-        # only deepdive on level 3 models
-        if model.model_layers_count > 2:
-            report.score_analysis()
+        report.score_analysis(model.model_layers_count)
         report.add_graphs_with_ref_level()
         report.add_recommendations()
         report.save(results.result_path)
 
     # create an average report for all candidates
-    if not use_dynamic_weights:
+    if create_baseline:
         report = ReportGenerator(_results_parser=tp, _question_parser=qp, _advice_parser=ap,
                                  _weight_parser=wp, _file=template_path)
         report.name = model.weight_tab
         report.email = model.weight_tab
         report.results = helpers.average_all_results(all_answers)
         # only deepdive on level 3 models
-        if model.model_layers_count > 2:
-            report.score_analysis()
+        report.score_analysis(model.model_layers_count)
         report.add_graphs_with_ref_level()
         report.add_recommendations()
         report.save(results.result_path)
@@ -62,10 +59,10 @@ def run_1():
     m = ModelData(_weight_tab="TOPdesk PO")
     r = ResultData(_nr_of_candidates=17, _result_path=rp, _result_db="responses-po.xlsx")
     g = ReportGenerator()
-    process_results_for_model(r, m, g.file, False)
+    process_results_for_model(r, m, g.file, False, True)
     m = ModelData(_weight_tab="TOPdesk PM")
     r = ResultData(_nr_of_candidates=4, _result_path=rp, _result_db="responses-pm.xlsx")
-    process_results_for_model(r, m, g.file, False)
+    process_results_for_model(r, m, g.file, False, True)
 
 
 # Based on model 5.0
@@ -75,9 +72,9 @@ def run_2():
     # you can drop to 67 questions when partnering and product knowledge are ommited (also from the results!!!)
     m = ModelData(_question_count=74, _model_layers_count=2, _model_area_count=18, _question_path=rp, _question_db="PPC Question DB v5.0 rc2.xlsx")
     r = ResultData(_nr_of_candidates=1, _result_path=rp, _result_db="test_responses.xlsx")
-    process_results_for_model(r, m, rp+"/ReportTemplate.docx", False)
+    process_results_for_model(r, m, rp+"/ReportTemplate.docx", False, False)
 
 # main
-#run_2()
+run_2()
 #check backwards compatibilty
-run_1()
+#run_1()
