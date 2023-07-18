@@ -83,7 +83,7 @@ def run_2(responses="test_responses.xlsx"):
 
     # you can drop to 67 questions when partnering and product knowledge are ommited (also from the results!!!)
     m = ModelData(_question_count=74, _model_layers_count=2, _model_area_count=18, _question_path=rp, _question_db="PPC Question DB v5.0 rc2.xlsx")
-    r = ResultData(_nr_of_candidates=1, _result_path=rp, _result_db=responses)
+    r = ResultData(_nr_of_candidates=2, _result_path=rp, _result_db=responses)
     process_results_for_model(r, m, rp+"/ReportTemplate.docx", False, False)
 
 # main

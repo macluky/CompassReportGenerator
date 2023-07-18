@@ -165,10 +165,11 @@ class ReportGenerator:
             print("Can't find: " + tag + " in document template")
         else:
             fig = self.create_spider(depth)
+            # obsolete? ended up with the same dimentions
             if depth == 2:
                 fig.write_image(tempfile, format='png', width=580, height=400, scale=0.84)
             else:
-                fig.write_image(tempfile, format='png', width=450, height=400, scale=0.84)
+                fig.write_image(tempfile, format='png', width=580, height=400, scale=0.84)
 
             helpers.substitute_image_placeholder(para, tempfile)
             # print("Replaced tag: " + tag + " with spider of depth "+str(depth))
